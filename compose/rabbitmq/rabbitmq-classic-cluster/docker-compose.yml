@@ -1,0 +1,92 @@
+version: '3'
+name: rabbitmq-cluster
+
+networks:
+  rabbitmq-net:
+    driver: bridge
+
+services:
+  node01:
+    image: docker.io/rabbitmq:${RABBITMQ_VERSION}
+    hostname: node01
+    container_name: rabbitmq-node01
+    user: rabbitmq:rabbitmq
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+    networks:
+      - rabbitmq-net
+    ports:
+      - ${RABBITMQ_NODE_01_MANAGEMENT_PORT}:15672
+      - ${RABBITMQ_NODE_01_PORT}:5672
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_COOKIE}
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-setcookie ${RABBITMQ_COOKIE}"
+      # 节点名称，默认rabbit@${hostname}
+      RABBITMQ_NODENAME: rabbit@node01
+    volumes:
+      - ./node01/data/:/var/lib/rabbitmq/
+      # - ./node01/data/.erlang.cookie:/var/lib/rabbitmq/.erlang.cookie
+      - ./node01/conf/:/etc/rabbitmq/
+      - ./node01/logs/:/var/log/rabbitmq/
+      - /etc/localtime:/etc/localtime:ro
+
+  node02:
+    image: docker.io/rabbitmq:${RABBITMQ_VERSION}
+    hostname: node02
+    container_name: rabbitmq-node02
+    user: rabbitmq:rabbitmq
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+    networks:
+      - rabbitmq-net
+    ports:
+      - ${RABBITMQ_NODE_02_MANAGEMENT_PORT}:15672
+      - ${RABBITMQ_NODE_02_PORT}:5672
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_COOKIE}
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-setcookie ${RABBITMQ_COOKIE}"
+      RABBITMQ_NODENAME: rabbit@node02
+    volumes:
+      - ./node02/data/:/var/lib/rabbitmq/
+      # - ./node02/data/.erlang.cookie:/var/lib/rabbitmq/.erlang.cookie
+      - ./node02/conf/:/etc/rabbitmq/
+      - ./node02/logs/:/var/log/rabbitmq/
+      - /etc/localtime:/etc/localtime:ro
+
+  node03:
+    image: docker.io/rabbitmq:${RABBITMQ_VERSION}
+    hostname: node03
+    container_name: rabbitmq-node03
+    user: rabbitmq:rabbitmq
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+    networks:
+      - rabbitmq-net
+    ports:
+      - ${RABBITMQ_NODE_03_MANAGEMENT_PORT}:15672
+      - ${RABBITMQ_NODE_03_PORT}:5672
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_COOKIE}
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-setcookie ${RABBITMQ_COOKIE}"
+      RABBITMQ_NODENAME: rabbit@node03
+    volumes:
+      - ./node03/data/:/var/lib/rabbitmq/
+      # - ./node03/data/.erlang.cookie:/var/lib/rabbitmq/.erlang.cookie
+      - ./node03/conf/:/etc/rabbitmq/
+      - ./node03/logs/:/var/log/rabbitmq/
+      - /etc/localtime:/etc/localtime:ro

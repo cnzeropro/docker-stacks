@@ -1,0 +1,58 @@
+#
+# Copyright 2022 Apollo Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+version: '2.1'
+
+networks:
+  apollo-net:
+
+services:
+  apollo-quick-start:
+    image: docker.io/nobodyiam/apollo-quick-start:${APOLLO_QUICK_START_VERSION}
+    container_name: apollo-quick-start
+    depends_on:
+      apollo-db:
+        condition: service_healthy
+    ports:
+      - ${APOLLO_CONFIGSERVICE_PORT}:8080
+      - ${APOLLO_ADMINSERVICE_PORT}:8090
+      - ${APOLLO_PORTAL_PORT}:8070
+    networks:
+      - apollo-net
+    environment:
+      - JAVA_OPTS=-Xms128m -Xmx1024m -Xmn100m -Xss256k -XX:MetaspaceSize=10m -XX:MaxMetaspaceSize=250m
+      - APOLLO_CONFIG_DB_USERNAME=root
+      - APOLLO_CONFIG_DB_PASSWORD=apollo
+      - APOLLO_PORTAL_DB_USERNAME=root
+      - APOLLO_PORTAL_DB_PASSWORD=apollo
+
+  apollo-db:
+    image: docker.io/mysql:${APOLLO_MYSQL_VERSION}
+    container_name: apollo-db
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: apollo
+    ports:
+      - ${APOLLO_DB_PORT}:3306
+    volumes:
+      - ./db/data:/var/lib/mysql
+      - ./db/sql:/docker-entrypoint-initdb.d
+    networks:
+      - apollo-net
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 1s
+      retries: 10

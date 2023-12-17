@@ -1,0 +1,2 @@
+基于redis官方镜像制作，使用host网络模式。
+很不幸，host模式只能在linux下使用，在windows下和Mac使用Docker Desktop是不支持 host网络的。

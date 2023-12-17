@@ -1,0 +1,11 @@
+version: '3'
+services:
+  loki:
+    image: grafana/loki # grafana/loki:2.9.1
+    container_name: loki
+    user: root
+    volumes:
+      - ./conf/:/etc/loki/
+      - ./data/:/loki/
+    ports:
+      - "3100:3100"

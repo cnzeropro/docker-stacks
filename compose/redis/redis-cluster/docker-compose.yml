@@ -1,0 +1,107 @@
+version: '3'
+name: redis-cluster
+services:
+  redis1:
+    image: redis:${REDIS_VERSION}
+    container_name: redis-node01
+    environment: 
+      # 需要和配置文件对应
+      - PORT=6301 
+      - TZ=Asia/Shanghai
+    network_mode: host
+    ports:
+      - 6301:6301
+      - 16301:16301
+    # 标准输入打开
+    stdin_open: true 
+    # 后台运行不退出
+    tty: true 
+    volumes:
+      - ./node-01/conf:/usr/local/etc/redis
+      - ./node-01/data:/data
+    command: sh -c "redis-server /usr/local/etc/redis/redis.conf"
+
+  redis2:
+    image: redis:${REDIS_VERSION}
+    container_name: redis-node02
+    environment: 
+      - PORT=6302
+      - TZ=Asia/Shanghai
+    network_mode: host
+    ports:
+      - 6302:6302
+      - 16302:16302
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./node-02/conf:/usr/local/etc/redis
+      - ./node-02/data:/data
+    command: sh -c "redis-server /usr/local/etc/redis/redis.conf"
+
+  redis3:
+    image: redis:${REDIS_VERSION}
+    container_name: redis-node03
+    environment: 
+      - PORT=6303
+      - TZ=Asia/Shanghai
+    network_mode: host
+    ports:
+      - 6303:6303
+      - 16303:16303
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./node-03/conf:/usr/local/etc/redis
+      - ./node-03/data:/data
+    command: sh -c "redis-server /usr/local/etc/redis/redis.conf"
+
+  redis4:
+    image: redis:${REDIS_VERSION}
+    container_name: redis-node04
+    environment: 
+      - PORT=6304
+      - TZ=Asia/Shanghai
+    network_mode: host
+    ports:
+      - 6304:6304
+      - 16304:16304
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./node-04/conf:/usr/local/etc/redis
+      - ./node-04/data:/data
+    command: sh -c "redis-server /usr/local/etc/redis/redis.conf"
+
+  redis5:
+    image: redis:${REDIS_VERSION}
+    container_name: redis-node05
+    environment: 
+      - PORT=6305
+      - TZ=Asia/Shanghai
+    network_mode: host
+    ports:
+      - 6305:6305
+      - 16305:16305
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./node-05/conf:/usr/local/etc/redis
+      - ./node-05/data:/data
+    command: sh -c "redis-server /usr/local/etc/redis/redis.conf"
+
+  redis6:
+    image: redis:${REDIS_VERSION}
+    container_name: redis-node06
+    environment: 
+      - PORT=6306
+      - TZ=Asia/Shanghai
+    network_mode: host
+    ports:
+      - 6306:6306
+      - 16306:16306
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./node-06/conf:/usr/local/etc/redis
+      - ./node-06/data:/data
+    command: sh -c "redis-server /usr/local/etc/redis/redis.conf"

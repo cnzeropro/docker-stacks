@@ -1,0 +1,46 @@
+version: '3'
+name: zookeeper-cluster
+services:
+  zoo1:
+    image: docker.io/zookeeper:${ZK_VERSION}
+    hostname: zk1
+    container_name: zookeeper-node01
+    ports:
+      - "2101:2181"
+      # node1开放Web管理端
+      - "8080:8080"
+    volumes:
+      - ./node01/conf/:/conf/
+      - ./node01/data/:/data/
+      - ./node01/datalog/:/datalog/
+      - ./node01/logs/:/logs/
+    environment:
+      ZOO_MY_ID: 1
+
+  zoo2:
+    image: docker.io/zookeeper:${ZK_VERSION}
+    hostname: zk2
+    container_name: zookeeper-node02
+    ports:
+      - "2102:2181"
+    volumes:
+      - ./node02/conf/:/conf/
+      - ./node02/data/:/data/
+      - ./node02/datalog/:/datalog/
+      - ./node02/logs:/logs/
+    environment:
+      ZOO_MY_ID: 2
+
+  zoo3:
+    image: docker.io/zookeeper:${ZK_VERSION}
+    hostname: zk3
+    container_name: zookeeper-node03
+    ports:
+      - "2103:2181"
+    volumes:
+      - ./node03/conf/:/conf/
+      - ./node03/data/:/data/
+      - ./node03/datalog/:/datalog/
+      - ./node03/logs/:/logs/
+    environment:
+      ZOO_MY_ID: 3

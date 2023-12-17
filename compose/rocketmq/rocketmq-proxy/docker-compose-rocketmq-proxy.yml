@@ -1,0 +1,17 @@
+version: '3'
+name: rocketmq-proxy
+services:
+  # RocketMQ 5.0 才引入了无状态的 Proxy 模块
+  # 如果RocketMQ版本小于5.0，请勿使用此服务
+  proxy:
+    image: apache/rocketmq:5.1.3 # apache/rocketmq:5.1.3
+    container_name: rocketmq-proxy
+    hostname: proxy
+    user: root
+    volumes:
+      - ./logs/:/home/rocketmq/logs/
+      - ./conf/:/home/rocketmq/rocketmq-5.1.3/conf/
+    environment:
+      - NAMESRV_ADDR=namesrv:9876
+    # command: sh mqproxy -n namesrv:9876 -pc ../conf/rmq-proxy.json
+    command: sh mqproxy -pc ../conf/rmq-proxy.json

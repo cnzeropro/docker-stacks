@@ -1,0 +1,13 @@
+version: '3'
+name: rocketmq-dashboard
+services:
+  dashboard:
+    image: apacherocketmq/rocketmq-dashboard # apacherocketmq/rocketmq-dashboard:1.0.0
+    container_name: rocketmq-dashboard
+    hostname: dashboard
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs/:/root/logs/
+    environment:
+      - JAVA_OPTS=-Dlogging.level.root=info -Drocketmq.namesrv.addr=namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false

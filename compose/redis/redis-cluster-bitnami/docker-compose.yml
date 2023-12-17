@@ -1,0 +1,147 @@
+version: '3'
+name: redis-cluster
+services:
+  redis-node-01:
+    image: docker.io/bitnami/redis-cluster:${REDIS_VERSION}
+    container_name: redis-node-01
+    user: root
+    volumes:
+      # 重写配置文件
+      # - ./node-01/conf:/opt/bitnami/redis/mounted-etc/redis.conf
+      # 映射证书目录
+      # - ./node-01/certs:/opt/bitnami/redis/certs
+      - ./node-01/data:/bitnami/redis/data
+    depends_on:
+      - redis-node-02
+      - redis-node-03
+      - redis-node-04
+      - redis-node-05
+      - redis-node-06
+    environment:
+      # 不使用密码
+      # - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT_NUMBER=${REDIS_NODE_01_PORT}
+
+      - REDISCLI_AUTH=${REDIS_PASSWORD}
+      # REDIS_CLUSTER_DYNAMIC_IPS必须设置为no（不使用动态IP），否则REDIS_CLUSTER_ANNOUNCE_IP不会生效
+      - REDIS_CLUSTER_DYNAMIC_IPS=no
+      # 主机IP或公网IP，不要使用127.0.0.1或localhost
+      - REDIS_CLUSTER_ANNOUNCE_IP=${ANNOUNCE_IP}
+      - REDIS_CLUSTER_ANNOUNCE_PORT=${REDIS_NODE_01_PORT}
+      - REDIS_CLUSTER_ANNOUNCE_BUS_PORT=${REDIS_NODE_01_BUS_PORT}
+      # - REDIS_NODES=redis-node-01:${REDIS_NODE_01_PORT} redis-node-02:${REDIS_NODE_02_PORT} redis-node-03:${REDIS_NODE_03_PORT} redis-node-04:${REDIS_NODE_04_PORT} redis-node-05:${REDIS_NODE_05_PORT} redis-node-06:${REDIS_NODE_06_PORT}
+      - REDIS_NODES=${ANNOUNCE_IP}:${REDIS_NODE_01_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_02_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_03_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_04_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_05_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_06_PORT}
+      # - REDIS_NODES=redis-node-01 redis-node-02 redis-node-03 redis-node-04 redis-node-05 redis-node-06
+      
+      # 配置证书
+      # - REDIS_TLS_ENABLED=yes
+      # - REDIS_TLS_CERT_FILE=/opt/bitnami/redis/certs/redis.crt
+      # - REDIS_TLS_KEY_FILE=/opt/bitnami/redis/certs/redis.key
+      # - REDIS_TLS_CA_FILE=/opt/bitnami/redis/certs/redisCA.crt
+
+      #  redis cluster creator
+      - REDIS_CLUSTER_CREATOR=yes
+      - REDIS_CLUSTER_REPLICAS=1
+    ports:
+      - ${REDIS_NODE_01_PORT}:${REDIS_NODE_01_PORT}
+      - ${REDIS_NODE_01_BUS_PORT}:${REDIS_NODE_01_BUS_PORT}
+
+  redis-node-02:
+    image: docker.io/bitnami/redis-cluster:${REDIS_VERSION}
+    container_name: redis-node-02
+    user: root
+    volumes:
+      - ./node-02/data:/bitnami/redis/data
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT_NUMBER=${REDIS_NODE_02_PORT}
+      - REDIS_CLUSTER_DYNAMIC_IPS=no
+      - REDIS_CLUSTER_ANNOUNCE_IP=${ANNOUNCE_IP}
+      - REDIS_CLUSTER_ANNOUNCE_PORT=${REDIS_NODE_02_PORT}
+      - REDIS_CLUSTER_ANNOUNCE_BUS_PORT=${REDIS_NODE_02_BUS_PORT}
+      # - REDIS_NODES=redis-node-01:${REDIS_NODE_01_PORT} redis-node-02:${REDIS_NODE_02_PORT} redis-node-03:${REDIS_NODE_03_PORT} redis-node-04:${REDIS_NODE_04_PORT} redis-node-05:${REDIS_NODE_05_PORT} redis-node-06:${REDIS_NODE_06_PORT}
+      - REDIS_NODES=${ANNOUNCE_IP}:${REDIS_NODE_01_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_02_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_03_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_04_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_05_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_06_PORT}
+      # - REDIS_NODES=redis-node-01 redis-node-02 redis-node-03 redis-node-04 redis-node-05 redis-node-06
+    ports:
+      - ${REDIS_NODE_02_PORT}:${REDIS_NODE_02_PORT}
+      - ${REDIS_NODE_02_BUS_PORT}:${REDIS_NODE_02_BUS_PORT}
+
+  redis-node-03:
+    image: docker.io/bitnami/redis-cluster:${REDIS_VERSION}
+    container_name: redis-node-03
+    user: root
+    volumes:
+      - ./node-03/data:/bitnami/redis/data
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT_NUMBER=${REDIS_NODE_03_PORT}
+      - REDIS_CLUSTER_DYNAMIC_IPS=no
+      - REDIS_CLUSTER_ANNOUNCE_IP=${ANNOUNCE_IP}
+      - REDIS_CLUSTER_ANNOUNCE_PORT=${REDIS_NODE_03_PORT}
+      - REDIS_CLUSTER_ANNOUNCE_BUS_PORT=${REDIS_NODE_03_BUS_PORT}
+      # - REDIS_NODES=redis-node-01:${REDIS_NODE_01_PORT} redis-node-02:${REDIS_NODE_02_PORT} redis-node-03:${REDIS_NODE_03_PORT} redis-node-04:${REDIS_NODE_04_PORT} redis-node-05:${REDIS_NODE_05_PORT} redis-node-06:${REDIS_NODE_06_PORT}
+      - REDIS_NODES=${ANNOUNCE_IP}:${REDIS_NODE_01_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_02_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_03_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_04_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_05_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_06_PORT}
+      # - REDIS_NODES=redis-node-01 redis-node-02 redis-node-03 redis-node-04 redis-node-05 redis-node-06
+    ports:
+      - ${REDIS_NODE_03_PORT}:${REDIS_NODE_03_PORT}
+      - ${REDIS_NODE_03_BUS_PORT}:${REDIS_NODE_03_BUS_PORT}
+
+  redis-node-04:
+    image: docker.io/bitnami/redis-cluster:${REDIS_VERSION}
+    container_name: redis-node-04
+    user: root
+    volumes:
+      - ./node-04/data:/bitnami/redis/data
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT_NUMBER=${REDIS_NODE_04_PORT}
+      - REDIS_CLUSTER_DYNAMIC_IPS=no
+      - REDIS_CLUSTER_ANNOUNCE_IP=${ANNOUNCE_IP}
+      - REDIS_CLUSTER_ANNOUNCE_PORT=${REDIS_NODE_04_PORT}
+      - REDIS_CLUSTER_ANNOUNCE_BUS_PORT=${REDIS_NODE_04_BUS_PORT}
+      # - REDIS_NODES=redis-node-01:${REDIS_NODE_01_PORT} redis-node-02:${REDIS_NODE_02_PORT} redis-node-03:${REDIS_NODE_03_PORT} redis-node-04:${REDIS_NODE_04_PORT} redis-node-05:${REDIS_NODE_05_PORT} redis-node-06:${REDIS_NODE_06_PORT}
+      - REDIS_NODES=${ANNOUNCE_IP}:${REDIS_NODE_01_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_02_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_03_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_04_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_05_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_06_PORT}
+      # - REDIS_NODES=redis-node-01 redis-node-02 redis-node-03 redis-node-04 redis-node-05 redis-node-06
+    ports:
+      - ${REDIS_NODE_04_PORT}:${REDIS_NODE_04_PORT}
+      - ${REDIS_NODE_04_BUS_PORT}:${REDIS_NODE_04_BUS_PORT}
+
+  redis-node-05:
+    image: docker.io/bitnami/redis-cluster:${REDIS_VERSION}
+    container_name: redis-node-05
+    user: root
+    volumes:
+      - ./node-05/data:/bitnami/redis/data
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT_NUMBER=${REDIS_NODE_05_PORT}
+      - REDIS_CLUSTER_DYNAMIC_IPS=no
+      - REDIS_CLUSTER_ANNOUNCE_IP=${ANNOUNCE_IP}
+      - REDIS_CLUSTER_ANNOUNCE_PORT=${REDIS_NODE_05_PORT}
+      - REDIS_CLUSTER_ANNOUNCE_BUS_PORT=${REDIS_NODE_05_BUS_PORT}
+      # - REDIS_NODES=redis-node-01:${REDIS_NODE_01_PORT} redis-node-02:${REDIS_NODE_02_PORT} redis-node-03:${REDIS_NODE_03_PORT} redis-node-04:${REDIS_NODE_04_PORT} redis-node-05:${REDIS_NODE_05_PORT} redis-node-06:${REDIS_NODE_06_PORT}
+      - REDIS_NODES=${ANNOUNCE_IP}:${REDIS_NODE_01_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_02_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_03_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_04_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_05_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_06_PORT}
+      # - REDIS_NODES=redis-node-01 redis-node-02 redis-node-03 redis-node-04 redis-node-05 redis-node-06
+    ports:
+      - ${REDIS_NODE_05_PORT}:${REDIS_NODE_05_PORT}
+      - ${REDIS_NODE_05_BUS_PORT}:${REDIS_NODE_05_BUS_PORT}
+
+  redis-node-06:
+    image: docker.io/bitnami/redis-cluster:${REDIS_VERSION}
+    container_name: redis-node-06
+    user: root
+    volumes:
+      - ./node-06/data:/bitnami/redis/data
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT_NUMBER=${REDIS_NODE_06_PORT}
+      - REDIS_CLUSTER_DYNAMIC_IPS=no
+      - REDIS_CLUSTER_ANNOUNCE_IP=${ANNOUNCE_IP}
+      - REDIS_CLUSTER_ANNOUNCE_PORT=${REDIS_NODE_06_PORT}
+      # - REDIS_NODES=redis-node-01:${REDIS_NODE_01_PORT} redis-node-02:${REDIS_NODE_02_PORT} redis-node-03:${REDIS_NODE_03_PORT} redis-node-04:${REDIS_NODE_04_PORT} redis-node-05:${REDIS_NODE_05_PORT} redis-node-06:${REDIS_NODE_06_PORT}
+      - REDIS_NODES=${ANNOUNCE_IP}:${REDIS_NODE_01_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_02_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_03_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_04_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_05_PORT} ${ANNOUNCE_IP}:${REDIS_NODE_06_PORT}
+      # - REDIS_NODES=redis-node-01 redis-node-02 redis-node-03 redis-node-04 redis-node-05 redis-node-06
+    ports:
+      - ${REDIS_NODE_06_PORT}:${REDIS_NODE_06_PORT}
+      - ${REDIS_NODE_06_BUS_PORT}:${REDIS_NODE_06_BUS_PORT}

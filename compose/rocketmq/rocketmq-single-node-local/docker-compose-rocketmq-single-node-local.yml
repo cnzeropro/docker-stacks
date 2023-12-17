@@ -1,0 +1,45 @@
+version: '3'
+name: rocketmq-single-node-local
+services:
+  namesrv:
+    # apacherocketmq/rocketmq:${ROCKETMQ_VERSION} 老版docker镜像地址
+    image: apache/rocketmq:${ROCKETMQ_VERSION}
+    container_name: rocketmq-nameserver
+    user: root
+    ports:
+      - 9876:${NAMESRV_PORT}
+    volumes:
+      - ./namesrv/logs/:/home/rocketmq/logs/
+    command: sh mqnamesrv
+
+  broker:
+    image: apache/rocketmq:${ROCKETMQ_VERSION}
+    container_name: rocketmq-broker
+    user: root
+    ports:
+      - "10909:10909"
+      - "10911:10911"
+      - "10912:10912"
+    volumes:
+      - ./broker/logs/:/home/rocketmq/logs/
+      - ./broker/store/:/home/rocketmq/store/
+      - ./broker/conf/broker.conf:/home/rocketmq/rocketmq-${ROCKETMQ_VERSION}/conf/broker.conf
+    environment:
+      - NAMESRV_ADDR=namesrv:${NAMESRV_PORT}
+    # 从老版到5.0的平滑升级思路（Local模式），增加“--enable-proxy”参数
+    command: sh mqbroker -c ../conf/broker.conf --enable-proxy
+    depends_on:
+      - namesrv
+
+  dashboard:
+    image: apacherocketmq/rocketmq-dashboard:${ROCKETMQ_DASHBOARD_VERSION}
+    container_name: rocketmq-dashboard
+    user: root
+    ports:
+      - "8077:8080"
+    volumes:
+      - ./dashboard/logs/:/root/logs/
+    environment:
+      - JAVA_OPTS=-Drocketmq.namesrv.addr=namesrv:${NAMESRV_PORT} -Dlogging.level.root=info -Dcom.rocketmq.sendMessageWithVIPChannel=false
+    depends_on:
+      - namesrv

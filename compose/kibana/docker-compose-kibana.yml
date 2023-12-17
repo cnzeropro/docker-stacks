@@ -1,0 +1,14 @@
+version: '3'
+services:
+  kibana:
+    image: kibana # kibana:8.10.1
+    container_name: kibana
+    volumes:
+      - ./conf/:/usr/share/kibana/config/
+      - ./data/:/usr/share/kibana/data/
+      - ./logs/:/usr/share/kibana/logs/
+#    environment:
+#      SERVER_NAME: kibana
+#      ELASTICSEARCH_HOSTS: '["http://es01:9200","http://es02:9200","http://es03:9200"]'
+    ports:
+      - "5601:5601"

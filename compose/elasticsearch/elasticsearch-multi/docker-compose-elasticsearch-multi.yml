@@ -1,0 +1,56 @@
+version: '3'
+name: elasticsearch-cluster
+services:
+  elasticsearch01:
+    image: elasticsearch # elasticsearch:8.10.1
+    container_name: elasticsearch01
+    hostname: es01
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./es01/data/:/usr/share/elasticsearch/data/
+    ports:
+      - "9200:9200"
+  elasticsearch02:
+    image: elasticsearch # elasticsearch:8.10.1
+    container_name: elasticsearch02
+    hostname: es02
+    environment:
+      - node.name=es02
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./es01/data/:/usr/share/elasticsearch/data/
+  elasticsearch03:
+    image: elasticsearch # elasticsearch:8.10.1
+    container_name: elasticsearch03
+    hostname: es03
+    environment:
+      - node.name=es03
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./es01/data/:/usr/share/elasticsearch/data/

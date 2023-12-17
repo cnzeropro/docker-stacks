@@ -1,0 +1,10 @@
+version: '3'
+services:
+  prometheus:
+    image: prom/prometheus # prom/prometheus:v2.47.0
+    container_name: prometheus
+    volumes:
+      - ./conf/:/etc/prometheus/
+      - ./data/:/prometheus/
+    ports:
+      - "9090:9090"

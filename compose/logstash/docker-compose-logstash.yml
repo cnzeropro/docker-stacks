@@ -1,0 +1,11 @@
+version: '3'
+services:
+  logstash:
+    image: logstash # logstash:8.10.1
+    container_name: logstash
+    volumes:
+      - ./conf/:/usr/share/logstash/config/
+      - ./data/:/usr/share/logstash/data/
+    ports:
+      - "5044:5044"
+      - "9600:9600"

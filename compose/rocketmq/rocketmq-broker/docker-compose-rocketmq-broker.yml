@@ -1,0 +1,20 @@
+version: '3'
+name: rocketmq-broker
+services:
+  broker:
+    image: apache/rocketmq:5.1.3 # apache/rocketmq:5.1.3
+    container_name: rocketmq-broker
+    hostname: broker
+    user: root
+    ports:
+      # - "9876:9876"
+      - "10909:10909"
+      - "10911:10911"
+      - "10912:10912"
+    volumes:
+      - ./logs/:/home/rocketmq/logs/
+      - ./store/:/home/rocketmq/store/
+      - ./conf/:/home/rocketmq/rocketmq-5.1.3/conf/
+    environment:
+      - NAMESRV_ADDR=namesrv:9876
+    command: sh mqbroker -c ../conf/broker.conf

@@ -1,0 +1,105 @@
+version: "3"
+name: rocketmq-multi-master-multi-slave-cluster
+services:
+  namesrv01:
+    image: apache/rocketmq:${ROCKETMQ_VERSION}
+    container_name: rocketmq-nameserver01
+    ports:
+      - 9876:${NAMESRV_PORT}
+    volumes:
+      - ./namesrv01/logs/:/home/rocketmq/logs/
+    command: sh mqnamesrv
+
+  namesrv02:
+    image: apache/rocketmq:${ROCKETMQ_VERSION}
+    container_name: rocketmq-nameserver02
+    ports:
+      - 9877:${NAMESRV_PORT}
+    volumes:
+      - ./namesrv02/logs/:/home/rocketmq/logs/
+    command: sh mqnamesrv
+
+  proxy01:
+    image: apache/rocketmq:${ROCKETMQ_VERSION}
+    container_name: rocketmq-proxy01
+    volumes:
+      - ./proxy01/logs/:/home/rocketmq/logs/
+    environment:
+      - NAMESRV_ADDR=namesrv01:${NAMESRV_PORT};namesrv02:${NAMESRV_PORT}
+    command: sh mqproxy
+
+  proxy02:
+    image: apache/rocketmq:${ROCKETMQ_VERSION}
+    container_name: rocketmq-proxy02
+    volumes:
+      - ./proxy02/logs/:/home/rocketmq/logs/
+    environment:
+      - NAMESRV_ADDR=namesrv01:${NAMESRV_PORT};namesrv02:${NAMESRV_PORT}
+    command: sh mqproxy
+
+  master01:
+    image: apache/rocketmq:${ROCKETMQ_VERSION}
+    container_name: rocketmq-master01
+    volumes:
+      - ./master01/logs/:/home/rocketmq/logs/
+      - ./master01/store/:/home/rocketmq/store/
+      - ./master01/conf/broker.conf:/home/rocketmq/rocketmq-${ROCKETMQ_VERSION}/conf/broker.conf
+    environment:
+      - NAMESRV_ADDR=namesrv01:${NAMESRV_PORT};namesrv02:${NAMESRV_PORT}
+    command: sh mqbroker -c ../conf/broker.conf
+    depends_on:
+      - namesrv01
+      - namesrv02
+
+  slave01:
+    image: apache/rocketmq:${ROCKETMQ_VERSION}
+    container_name: rocketmq-slave01
+    volumes:
+      - ./slave01/logs/:/home/rocketmq/logs/
+      - ./slave01/store/:/home/rocketmq/store/
+      - ./slave01/conf/broker.conf:/home/rocketmq/rocketmq-${ROCKETMQ_VERSION}/conf/broker.conf
+    environment:
+      - NAMESRV_ADDR=namesrv01:${NAMESRV_PORT};namesrv02:${NAMESRV_PORT}
+    command: sh mqbroker -c ../conf/broker.conf
+    depends_on:
+      - master01
+
+  master02:
+    image: apache/rocketmq:${ROCKETMQ_VERSION}
+    container_name: rocketmq-master02
+    volumes:
+      - ./master02/logs/:/home/rocketmq/logs/
+      - ./master02/store/:/home/rocketmq/store/
+      - ./master02/conf/broker.conf:/home/rocketmq/rocketmq-${ROCKETMQ_VERSION}/conf/broker.conf
+    environment:
+      - NAMESRV_ADDR=namesrv01:${NAMESRV_PORT};namesrv02:${NAMESRV_PORT}
+    command: sh mqbroker -c ../conf/broker.conf
+    depends_on:
+      - namesrv01
+      - namesrv02
+
+  slave02:
+    image: apache/rocketmq:${ROCKETMQ_VERSION}
+    container_name: rocketmq-slave02
+    volumes:
+      - ./slave02/logs/:/home/rocketmq/logs/
+      - ./slave02/store/:/home/rocketmq/store/
+      - ./slave02/conf/broker.conf:/home/rocketmq/rocketmq-${ROCKETMQ_VERSION}/conf/broker.conf
+    environment:
+      - NAMESRV_ADDR=namesrv01:${NAMESRV_PORT};namesrv02:${NAMESRV_PORT}
+    command: sh mqbroker -c ../conf/broker.conf
+    depends_on:
+      - master02
+
+  dashboard:
+    image: apacherocketmq/rocketmq-dashboard:${ROCKETMQ_DASHBOARD_VERSION}
+    container_name: rocketmq-dashboard
+    ports:
+      - "8077:8080"
+    volumes:
+      - ./dashboard/logs/:/root/logs/
+    environment:
+      - JAVA_OPTS=-Drocketmq.namesrv.addr=namesrv01:${NAMESRV_PORT};namesrv02:${NAMESRV_PORT} -Dlogging.level.root=info -Dcom.rocketmq.sendMessageWithVIPChannel=false
+    depends_on:
+      - namesrv01
+      - namesrv02

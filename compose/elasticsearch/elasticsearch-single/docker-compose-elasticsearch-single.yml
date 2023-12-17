@@ -1,0 +1,15 @@
+version: '3'
+services:
+  elasticsearch:
+    # https://hub.docker.com/_/elasticsearch
+    image: elasticsearch # elasticsearch:8.10.1
+    container_name: elasticsearch
+    volumes:
+      - ./conf/:/usr/share/elasticsearch/config/
+      - ./data/:/usr/share/elasticsearch/data/
+      - ./logs/:/usr/share/elasticsearch/logs/
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+      - "9300:9300"

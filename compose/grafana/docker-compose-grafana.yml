@@ -1,0 +1,16 @@
+version: '3'
+services:
+  # admin/admin
+  grafana:
+    image: grafana/grafana # grafana/grafana:10.1.2
+    container_name: grafana
+    user: root
+    volumes:
+      - ./data/:/var/lib/grafana/
+      - ./conf/:/etc/grafana/
+      # - ./conf/:/usr/share/grafana/conf/
+      - ./log/:/var/log/grafana/
+    environment:
+      GF_INSTALL_PLUGINS: grafana-clock-panel, grafana-simple-json-datasource
+    ports:
+      - "3000:3000"

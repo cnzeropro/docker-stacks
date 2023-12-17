@@ -1,0 +1,8 @@
+version: '3'
+services:
+  promtail:
+    image: grafana/promtail # grafana/promtail:2.8.5
+    container_name: promtail
+    volumes:
+      - ./conf/:/etc/promtail/
+      - ./data/:/var/lib/promtail/
