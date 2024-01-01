@@ -9,11 +9,12 @@ services:
     environment:
       TZ: Asia/Shanghai
     env_file:
-      - ./mysql.env
+      - mysql.env
     ports:
       - ${MYSQL_PORT}:3306
       - ${MYSQL_ADMIN_PORT}:33062
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./conf/:/etc/mysql/conf.d/
       - ./data/:/var/lib/mysql/
       - ./init/:/docker-entrypoint-initdb.d/
