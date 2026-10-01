@@ -1,1 +1,18 @@
+# IDE / 编辑器
 .idea/
+.vscode/
+*.iml
+
+# 操作系统
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# 临时与备份文件
+*.log
+*.tmp
+*.bak
+*.orig
+*.rej
+
+# 注意：各 compose 栈的 .env / *.env 是配置的一部分，必须提交，不要忽略
